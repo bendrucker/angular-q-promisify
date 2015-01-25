@@ -21,6 +21,32 @@ describe('angular-q-promisify', function () {
       $timeout.flush();
     });
 
+    it('fulfills with a value', function () {
+      var nodeback = sinon.stub().yields(null, 'foo');
+      expect($q.promisify(nodeback)()).to.eventually.equal('foo');
+      $timeout.flush();
+    });
+
+    it('returns multiple values as an array', function () {
+      var nodeback = sinon.stub().yields(null, 'foo', 'bar');
+      expect($q.promisify(nodeback)()).to.eventually.deep.equal(['foo', 'bar']);
+      $timeout.flush();
+    });
+
+    it('rejects with errors', function () {
+      var err = new Error();
+      var nodeback = sinon.stub().yields(err);
+      expect($q.promisify(nodeback)()).to.be.rejectedWith(err);
+      $timeout.flush();
+    });
+
+    it('rejects with errors thrown by the callback', function () {
+      var err = new Error();
+      var nodeback = sinon.stub().throws(err);
+      expect($q.promisify(nodeback)()).to.be.rejectedWith(err);
+      $timeout.flush();
+    });
+
   });
 
 });
