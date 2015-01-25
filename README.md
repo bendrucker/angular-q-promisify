@@ -1,4 +1,4 @@
-# angular-q-promisify
+# angular-q-promisify [![Build Status](https://travis-ci.org/bendrucker/angular-q-promisify.svg?branch=master)](https://travis-ci.org/bendrucker/angular-q-promisify)
 
 Angular service for returning `$q` promises from callback APIs. Inspired by [Bluebird's promsification API](https://github.com/petkaantonov/bluebird/blob/master/API.md#promisification), angular-q-promsify decorates `$q` with methods for converting functions and objects that take callbacks into ones that return `$q` promises.
 
