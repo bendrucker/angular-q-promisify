@@ -13,12 +13,12 @@ describe('angular-q-promisify', function () {
     $timeout = _$timeout_;
   }));
 
-  describe('#promisify', function () {
+  var nodeback;
+  beforeEach(function () {
+    nodeback = sinon.stub();
+  });
 
-    var nodeback;
-    beforeEach(function () {
-      nodeback = sinon.stub();
-    })
+  describe('#promisify', function () {
 
     it('promisifes a nodeback', function () {
       nodeback.yields(null);
@@ -69,6 +69,29 @@ describe('angular-q-promisify', function () {
 
     it('throws if called on a non-function', function () {
       expect(angular.bind(null, $q.promisify, 'foo')).to.throw('must be a function');
+    });
+
+  });
+
+  describe('#promisifyAll', function () {
+
+    it('promsifies an object', function () {
+      var object = {
+        method: nodeback.yields(null)
+      };
+      $q.promisifyAll(object);
+      expect(object.methodAsync()).to.eventually.be.fulfilled;
+      expect(object.method).to.have.been.calledOn(object);
+    });
+
+    it('does not rewrap promisifed methods', function () {
+      var object = {
+        method: nodeback.yields(null)
+      };
+      $q.promisifyAll(object);
+      var method = object.method;
+      $q.promisifyAll(object);
+      expect(object.method).to.equal(method);
     });
 
   });

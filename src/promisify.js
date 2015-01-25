@@ -30,8 +30,9 @@ module.exports = function ($q) {
 
   function promisifyAll (object) {
     return angular.forEach(object, function (value, key) {
+      key = key + 'Async'
       if (!value || typeof value !== 'function' || value.__isPromisifed__) return;
-      object[key + 'Async'] = promisify(key, object);
+      object[key] = promisify(value, object);
     }); 
   }
 
