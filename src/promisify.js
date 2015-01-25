@@ -24,13 +24,13 @@ module.exports = function ($q) {
       }
       return deferred.promise;
     }
-    promisifed.__isPromisifed = true;
+    promisifed.__isPromisifed__ = true;
     return promisifed;
   }
 
   function promisifyAll (object) {
     return angular.forEach(object, function (value, key) {
-      if (!value || typeof value !== 'function' || value.__isPromisifed) return;
+      if (!value || typeof value !== 'function' || value.__isPromisifed__) return;
       object[key + 'Async'] = promisify(key, object);
     }); 
   }
