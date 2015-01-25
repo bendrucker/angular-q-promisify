@@ -1,7 +1,7 @@
 'use strict';
 
 var angular = require('angular');
-var expect  = require('chai').use(require('chai-as-promised')).expect;
+var expect  = require('chai').use(require('chai-as-promised')).use(require('sinon-chai')).expect;
 var sinon   = require('sinon');
 
 describe('angular-q-promisify', function () {
@@ -24,6 +24,13 @@ describe('angular-q-promisify', function () {
       nodeback.yields(null);
       expect($q.promisify(nodeback)()).to.be.fulfilled;
       $timeout.flush();
+    });
+
+    it('passes through the arguments', function () {
+      nodeback.yields(null);
+      $q.promisify(nodeback)('foo', 'bar').then();
+      $timeout.flush();
+      expect(nodeback).to.have.been.calledWith('foo', 'bar');
     });
 
     it('fulfills with a value', function () {
@@ -50,6 +57,14 @@ describe('angular-q-promisify', function () {
       nodeback.throws(err);
       expect($q.promisify(nodeback)()).to.be.rejectedWith(err);
       $timeout.flush();
+    });
+
+    it('can set a receiver (this)', function () {
+      nodeback.yields(null);
+      var receiver = {};
+      $q.promisify(nodeback, receiver)().then();
+      $timeout.flush();
+      expect(nodeback).to.have.been.calledOn(receiver);
     });
 
     it('throws if called on a non-function', function () {
