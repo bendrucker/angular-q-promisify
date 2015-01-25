@@ -29,12 +29,14 @@ If a `receiver` is passed, the `nodeback` will be called on it, so `this` will b
 Note that the promisification logic is dramatically less sophisticated than Bluebird's. The function's `length` property will not be preserved among other potential inconsistencies. Most simple cases will work.
 
 ```js
-function getData (err, data) {
-  // ... 
+function getData (callback) {
+  // ...
 }
 var getDataPromise = $q.promisify(getData);
-getDataPromise.then(handleData).catch(handleErr);
+getDataPromise().then(handleData).catch(handleErr);
 ```
+
+<hr>
 
 ##### `$q.promisifyAll(object)` -> `object`
 
@@ -42,7 +44,7 @@ Promsifies all methods on an `object`, suffixing them with `'Async'`.
 
 ```js
 var user = {
-  getData: function (err, data) {
+  getData: function (callback) {
     // ...
   }
 };
