@@ -2,3 +2,12 @@ language: node_js
 node_js:
 - '0.10'
 sudo: false
+deploy:
+  provider: npm
+  email: bvdrucker@gmail.com
+  api_key:
+    secure: w8UxDqimDQk4OR+kRs8UDkFXgcRotvsv0+D/Q0lz+V5TjXgdOO62bXy51kOMpklDMcn/Guu/dLog0MVm2vkwq6F5OdA8uv6bo1tZr+1KZ3hwXINR8BSKBNTPuuzDd3NgYbTtzUJ3cyAAso2RU487NiMitZ+MWNRQnDtGi5zIUNg=
+  on:
+    tags: true
+    all_branches: true
+    repo: bendrucker/angular-q-promisify
