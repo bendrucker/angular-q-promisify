@@ -12,7 +12,7 @@ module.exports = function (config) {
     },
     reporters: ['progress', 'coverage'],
     browserify: {
-      debug: true
+      debug: true,
       transform: ['browserify-istanbul']
     },
     browsers: ['PhantomJS']
