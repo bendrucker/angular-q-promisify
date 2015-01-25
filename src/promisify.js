@@ -6,12 +6,12 @@ var assert  = require('assert');
 module.exports = function ($q) {
 
   function promisify (callback, receiver) {
+    receiver = receiver || {};
+    if (typeof callback === 'string') {
+      callback = receiver[callback];
+    }
+    assert(typeof callback === 'function', 'Callback must be a function');
     function promisifed () {
-      receiver = receiver || {};
-      if (typeof callback === 'string') {
-        callback = receiver[callback];
-      }
-      assert(typeof callback === 'function', 'Callback must be a function');
       var deferred = $q.defer();
       var nodeback = nodebackForDeferred(deferred);
       var args = toArray(arguments);
