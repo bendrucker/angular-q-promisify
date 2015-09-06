@@ -68,7 +68,7 @@ describe('angular-q-promisify', function () {
     });
 
     it('throws if called on a non-function', function () {
-      expect(angular.bind(null, $q.promisify, 'foo')).to.throw('must be a function');
+      expect(angular.bind(null, $q.promisify, 'foo')).to.throw('function');
     });
 
   });

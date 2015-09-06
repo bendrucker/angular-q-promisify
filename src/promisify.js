@@ -1,7 +1,8 @@
 'use strict';
 
 var angular = require('angular');
-var assert  = require('assert');
+var assertFn = require('assert-function');
+var assert = require('assert-ok')
 
 module.exports = function ($q) {
 
@@ -10,7 +11,7 @@ module.exports = function ($q) {
     if (typeof callback === 'string') {
       callback = receiver[callback];
     }
-    assert(typeof callback === 'function', 'Callback must be a function');
+    assertFn(callback);
     function promisifed () {
       var deferred = $q.defer();
       var nodeback = nodebackForDeferred(deferred);
