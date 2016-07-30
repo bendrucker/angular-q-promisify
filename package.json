@@ -50,6 +50,7 @@
   "dependencies": {
     "assert-function": "~1.0.0",
     "assert-ok": "~1.0.0",
-    "browserify-shim": "~3.8.2"
+    "browserify-shim": "~3.8.2",
+    "to-array": "~0.1.4"
   }
 }

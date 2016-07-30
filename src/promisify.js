@@ -1,68 +1,63 @@
-'use strict';
+'use strict'
 
-var angular = require('angular');
-var assertFn = require('assert-function');
+var angular = require('angular')
+var assertFn = require('assert-function')
 var assert = require('assert-ok')
+var toArray = require('to-array')
 
-module.exports = function ($q) {
+module.exports = promisify$Q
 
+promisify$Q.$inject = ['$delegate']
+function promisify$Q ($q) {
   function promisify (callback, receiver) {
-    receiver = receiver || {};
+    receiver = receiver || {}
+
     if (typeof callback === 'string') {
-      callback = receiver[callback];
+      callback = receiver[callback]
     }
-    assertFn(callback);
+
+    assertFn(callback)
+
     function promisifed () {
-      var deferred = $q.defer();
-      var nodeback = nodebackForDeferred(deferred);
-      var args = toArray(arguments);
-      args.push(nodeback);
-      try {
-        callback.apply(receiver, args);
-      }
-      catch (e) {
-        deferred.reject(e);
-      }
-      return deferred.promise;
+      var args = arguments
+      return $q(function (resolve, reject) {
+        try {
+          callback.apply(receiver, toArray(args).concat(Nodeback(resolve, reject)))
+        }
+        catch (err) {
+          reject(err)
+        }
+      })
     }
-    promisifed.__isPromisifed__ = true;
-    return promisifed;
+    promisifed.__isPromisifed__ = true
+    return promisifed
   }
 
   function promisifyAll (object) {
     return angular.forEach(object, function (value, key) {
       key = key + 'Async'
-      if (!value || typeof value !== 'function' || value.__isPromisifed__) return;
-      object[key] = promisify(value, object);
-    }); 
+      if (!value || typeof value !== 'function' || value.__isPromisifed__) return
+      object[key] = promisify(value, object)
+    })
   }
 
   return angular.extend($q, {
     promisify: promisify,
     promisifyAll: promisifyAll
-  });
+  })
 
-};
-module.exports.$inject = ['$delegate'];
-
-
-function toArray (args) {
-  return [].slice.call(args);
 }
 
-function nodebackForDeferred (deferred) {
+function Nodeback (resolve, reject) {
   return function nodeback (err, value) {
-    assert(arguments.length, 'nodebacks must have at least 1 argument');
     if (err) {
-      return deferred.reject(err);
+      return reject(err)
     }
-    else {
-      if (arguments.length <= 2) {
-        deferred.resolve(value);
-      }
-      else {
-        deferred.resolve([].slice.call(arguments, 1));
-      }
+
+    if (arguments.length <= 2) {
+      return resolve(value)
     }
-  };
+
+    resolve(toArray(arguments, 1))
+  }
 }
