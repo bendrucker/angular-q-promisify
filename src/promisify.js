@@ -7,8 +7,8 @@ var toArray = require('to-array')
 
 module.exports = promisify$Q
 
-promisify$Q.$inject = ['$delegate']
-function promisify$Q ($q) {
+promisify$Q.$inject = ['$delegate', '$rootScope']
+function promisify$Q ($q, $rootScope) {
   function promisify (callback, receiver) {
     receiver = receiver || {}
 
@@ -21,11 +21,16 @@ function promisify$Q ($q) {
     function promisifed () {
       var args = arguments
       return $q(function (resolve, reject) {
+        var apply = $rootScope.$apply.bind($rootScope)
         try {
-          callback.apply(receiver, toArray(args).concat(Nodeback(resolve, reject)))
+          callback.apply(receiver, toArray(args).concat(Nodeback(apply, resolve, reject)))
         }
         catch (err) {
-          reject(err)
+          setTimeout(function () {
+            apply(function () {
+              reject(err)
+            })
+          })
         }
       })
     }
@@ -48,16 +53,19 @@ function promisify$Q ($q) {
 
 }
 
-function Nodeback (resolve, reject) {
+function Nodeback (apply, resolve, reject) {
   return function nodeback (err, value) {
-    if (err) {
-      return reject(err)
-    }
+    var args = arguments
+    apply(function () {
+      if (err) {
+        return reject(err)
+      }
 
-    if (arguments.length <= 2) {
-      return resolve(value)
-    }
+      if (args.length <= 2) {
+        return resolve(value)
+      }
 
-    resolve(toArray(arguments, 1))
+      resolve(toArray(args, 1))
+    })
   }
 }

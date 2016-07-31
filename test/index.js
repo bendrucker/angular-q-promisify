@@ -21,50 +21,46 @@ describe('angular-q-promisify', function () {
   describe('#promisify', function () {
 
     it('promisifes a nodeback', function () {
-      nodeback.yields(null)
-      expect($q.promisify(nodeback)()).to.be.fulfilled
-      $timeout.flush()
+      nodeback.yieldsAsync(null)
+      return $q.promisify(nodeback)()
     })
 
     it('passes through the arguments', function () {
-      nodeback.yields(null)
-      $q.promisify(nodeback)('foo', 'bar').then()
-      $timeout.flush()
-      expect(nodeback).to.have.been.calledWith('foo', 'bar')
+      nodeback.yieldsAsync(null)
+      return $q.promisify(nodeback)('foo', 'bar').then(function () {
+        expect(nodeback).to.have.been.calledWith('foo', 'bar')
+      })
     })
 
     it('fulfills with a value', function () {
-      nodeback.yields(null, 'foo')
-      expect($q.promisify(nodeback)()).to.eventually.equal('foo')
-      $timeout.flush()
+      nodeback.yieldsAsync(null, 'foo')
+      return expect($q.promisify(nodeback)()).to.eventually.equal('foo')
     })
 
     it('returns multiple values as an array', function () {
-      nodeback.yields(null, 'foo', 'bar')
-      expect($q.promisify(nodeback)()).to.eventually.deep.equal(['foo', 'bar'])
-      $timeout.flush()
+      nodeback.yieldsAsync(null, 'foo', 'bar')
+      return expect($q.promisify(nodeback)()).to.eventually.deep.equal(['foo', 'bar'])
     })
 
     it('rejects with errors', function () {
       var err = new Error()
-      nodeback.yields(err)
-      expect($q.promisify(nodeback)()).to.be.rejectedWith(err)
-      $timeout.flush()
+      nodeback.yieldsAsync(err)
+      return expect($q.promisify(nodeback)()).to.be.rejectedWith(err)
     })
 
     it('rejects with errors thrown by the callback', function () {
       var err = new Error()
       nodeback.throws(err)
-      expect($q.promisify(nodeback)()).to.be.rejectedWith(err)
-      $timeout.flush()
+      return expect($q.promisify(nodeback)()).to.be.rejectedWith(err)
     })
 
     it('can set a receiver (this)', function () {
-      nodeback.yields(null)
+      nodeback.yieldsAsync(null)
       var receiver = {}
-      $q.promisify(nodeback, receiver)().then()
-      $timeout.flush()
-      expect(nodeback).to.have.been.calledOn(receiver)
+      return $q.promisify(nodeback, receiver)().then()
+        .then(function () {
+          expect(nodeback).to.have.been.calledOn(receiver)
+        })
     })
 
     it('throws if called on a non-function', function () {
@@ -77,16 +73,18 @@ describe('angular-q-promisify', function () {
 
     it('promsifies an object', function () {
       var object = {
-        method: nodeback.yields(null)
+        method: nodeback.yieldsAsync(null)
       }
       $q.promisifyAll(object)
-      expect(object.methodAsync()).to.eventually.be.fulfilled
-      expect(object.method).to.have.been.calledOn(object)
+      return expect(object.methodAsync()).to.eventually.be.fulfilled
+        .then(function () {
+          expect(object.method).to.have.been.calledOn(object)
+        })
     })
 
     it('does not rewrap promisifed methods', function () {
       var object = {
-        method: nodeback.yields(null)
+        method: nodeback.yieldsAsync(null)
       }
       $q.promisifyAll(object)
       var method = object.method
