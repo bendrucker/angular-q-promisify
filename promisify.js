@@ -2,12 +2,11 @@
 
 var angular = require('angular')
 var assertFn = require('assert-function')
-var assert = require('assert-ok')
 var toArray = require('to-array')
 
 module.exports = promisify$Q
 
-promisify$Q.$inject = ['$delegate', '$rootScope']
+promisify$Q.$inject = ['$q', '$rootScope']
 function promisify$Q ($q, $rootScope) {
   function promisify (callback, receiver) {
     receiver = receiver || {}
@@ -24,8 +23,7 @@ function promisify$Q ($q, $rootScope) {
         var apply = $rootScope.$apply.bind($rootScope)
         try {
           callback.apply(receiver, toArray(args).concat(Nodeback(apply, resolve, reject)))
-        }
-        catch (err) {
+        } catch (err) {
           setTimeout(function () {
             apply(function () {
               reject(err)
@@ -46,11 +44,9 @@ function promisify$Q ($q, $rootScope) {
     })
   }
 
-  return angular.extend($q, {
-    promisify: promisify,
+  return angular.extend(promisify, {
     promisifyAll: promisifyAll
   })
-
 }
 
 function Nodeback (apply, resolve, reject) {
