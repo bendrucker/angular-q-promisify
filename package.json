@@ -1,6 +1,6 @@
 {
   "name": "angular-q-promisify",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Angular service for returning $q promises from callback APIs",
   "main": "index.js",
   "scripts": {
